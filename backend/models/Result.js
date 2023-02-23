@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
 const resultsSchema = new mongoose.Schema({
+    category: {
+        type: String
+    },
+    numQuestions: {
+        type: Number,
+        required: [true]
+    },
     score: {
         type: Number,
         required: [true]

@@ -26,6 +26,7 @@ button {
 
 .landing {
   text-align: center;
+  min-width: 80%;
 }
 
 .landing h1 {
@@ -35,7 +36,7 @@ button {
 
 .landing button {
   font-size: 2rem;
-  width: 7rem;
+  width: 10rem;
   margin: 0 1rem;
 }
 
@@ -98,11 +99,17 @@ button.reset {
 }
 
 .answer-block {
+  font-size: 1.5rem;
   text-align: left;
   background-color: rgb(212, 221, 249);
   border-radius: 20px;
   margin: 2%;
   padding: 2%;
+}
+
+.user-answer {
+  font-weight: normal;
+  padding: 1%;
 }
 
 .correct-answer {
@@ -115,4 +122,50 @@ button.reset {
 
 p.number {
   font-weight: bolder;
+}
+
+.selected {
+  background-color: #EF476F;
+  color: #F5CCE8;
+}
+
+button.settings {
+  position: absolute;
+  top: 1rem;
+  left: 2rem;
+  font-size: 1.5rem;
+  padding: 1.2%;
+}
+
+form.quiz-setup {
+  min-width: 85%;
+  padding-bottom: 10%;
+}
+
+form.quiz-setup button {
+  margin: 0 2%;
+  padding: 1%;
+}
+
+.buttons-box {
+  margin-bottom: 8%;
+}
+
+.preferences {
+  width: 60%;
+}
+
+.num-questions {
+  width: 3rem;
+}
+
+select {
+  all: inherit;
+  margin: 0 auto;
+  font-size: 1.5rem;
+  padding: 1%;
+  background-color: rgb(212, 221, 249);
+  color: #EF476F;
+  border-radius: 5px;
+  margin-bottom: 10%;
 }

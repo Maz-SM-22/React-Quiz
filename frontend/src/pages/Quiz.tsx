@@ -1,55 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import he from 'he';
+import { useLoader } from '../contexts/LoadingContext';
 import { useAuthContext } from '../contexts/AuthContext';
+import { useQuizSettings } from '../contexts/QuizContext';
 import { fetchQuizQuestions, Question } from '../API';
-import QuestionCard, { userAnswerType } from './QuestionCard';
+import QuestionCard, { userAnswerType } from '../components/QuestionCard';
 
 const Quiz = () => {
-    const TOTAL_QUESTIONS = 10;
+    const quizSettings = useQuizSettings();
+    const TOTAL_QUESTIONS = parseInt(quizSettings?.totalQuestions || '10');
     const [questions, setQuestions] = useState<Question[]>([]);
     const [number, setNumber] = useState<number>(0);
     const [userAnswers, setUserAnswers] = useState<userAnswerType[]>([]);
     const [userScore, setUserScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
-    const [loading, setLoading] = useState(true);
     const auth = useAuthContext();
+    const loader = useLoader();
     const navigate = useNavigate();
 
     const startQuiz = async () => {
-        setLoading(true)
+        loader?.setIsLoading(true);
         setGameOver(false)
-        const newQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, 'medium');
+        const newQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, quizSettings?.difficulty, quizSettings?.category);
         setQuestions(newQuestions);
         setUserScore(0);
         setNumber(0);
         setUserAnswers([]);
-        setLoading(false);
+        loader?.setIsLoading(false);
     }
 
-    // const saveQuizScore = async () => {
-    //     const requestOptions: RequestInit = {
-    //         method: 'POST',
-    //         headers: { "Content-type": "application/json" },
-    //         body: JSON.stringify({
-    //             score: userScore,
-    //             answers: userAnswers
-    //         })
-    //     }
-    //     const response = await fetch('/results/add', requestOptions);
-    //     if (!response.ok) {
-    //         throw new Error(response.statusText);
-    //     } else {
-    //         const data = await response.json()
-    //         console.log(data.message);
-    //     }
-    // }
+    const saveQuizScore = async () => {
+        const requestOptions: RequestInit = {
+            method: 'POST',
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+                userId: auth?.authData?.id,
+                category: quizSettings?.category,
+                numQuestions: TOTAL_QUESTIONS,
+                score: userScore,
+                answers: userAnswers
+            })
+        }
+        try {
+            const response = await fetch('/results/add', requestOptions);
+            const data = await response.json()
+            if (!response.ok) {
+                loader?.setError(data.message);
+                throw new Error(response.statusText);
+            } else {
+                console.log(data.message);
+            }
+        } catch (error: any) {
+            loader?.setError(error);
+        }
+    }
 
     const nextQuestion = () => {
         if (number < TOTAL_QUESTIONS - 1) setNumber(number + 1);
         else {
             setGameOver(true);
-            // saveQuizScore();
+            saveQuizScore();
         }
     }
 
@@ -91,17 +102,17 @@ const Quiz = () => {
 
     return (
         <div className='quiz'>
+            <button onClick={() => navigate('/setup')} className='settings'>Change Quiz Settings</button>
             {auth?.authData && (
                 <button onClick={logout} className='logout'>Log Out</button>
             )}
-
             {questions.length === 0 && (
                 <>
                     <h1>React Quiz</h1>
                     <button className="start" onClick={startQuiz}>Start Quiz</button>
                 </>
             )}
-            {!loading && !gameOver &&
+            {!loader?.isLoading && !gameOver &&
                 <QuestionCard
                     question={questions[number].question}
                     answers={questions[number].answers}
@@ -114,7 +125,7 @@ const Quiz = () => {
             {gameOver && (
                 <>
                     <h2>Quiz complete!</h2>
-                    <div className="score">Your final score is: {userScore}</div>
+                    <div className="score">Your final score is: {userScore} out of {TOTAL_QUESTIONS}</div>
                     <button
                         className="reset"
                         onClick={startQuiz}
@@ -126,6 +137,7 @@ const Quiz = () => {
                                 className='answer-block'
                                 key={index}
                             >
+                                <div className="question">{he.unescape(answer.question)}</div>
                                 <div className={answer.isCorrect ? 'user-answer correct' : 'user-answer'}>{answer.isCorrect ? '✅' : '❌'} Answer: {he.unescape(answer.answer)}</div>
                                 {answer.isCorrect ? '' : <div className='correct-answer'>Correct Answer: {he.unescape(answer.correctAnswer)}</div>}
                             </div>

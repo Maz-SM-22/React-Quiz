@@ -26,12 +26,14 @@ const AuthProvider = ({ children }: authContextProps) => {
     useEffect(() => {
         const getLoggedInUser = async () => {
             try {
+                loading?.setIsLoading(true);
                 const response = await fetch('/auth/data', {
                     method: 'GET',
                     headers: { "Content-type": "appliction/json" },
                     credentials: 'include'
                 });
                 if (!response.ok) {
+                    loading?.setError(response.statusText);
                     throw new Error(response.statusText);
                 } else {
                     const userData = await response.json();
@@ -40,6 +42,7 @@ const AuthProvider = ({ children }: authContextProps) => {
                     return userData;
                 }
             } catch (error: any) {       // Fix any type 
+                loading?.setError(error);
                 throw new Error(error.message)
             }
         }

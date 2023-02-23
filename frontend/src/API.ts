@@ -10,8 +10,11 @@ export type Question = {
     answers: string[]
 }
 
-export const fetchQuizQuestions = async (amount: number, difficulty: 'easy' | 'medium' | 'hard', category?: number) => {
-    const url = `https://opentdb.com/api.php?amount=${amount}&category=${category ? category : ''}&difficulty=${difficulty}`;
+export const fetchQuizQuestions = async (amount: number, difficulty: string = '', category: string = '') => {
+    const url = new URL('https://opentdb.com/api.php');
+    url.searchParams.append('amount', amount.toString());
+    if (difficulty) url.searchParams.append('difficulty', difficulty);
+    if (category) url.searchParams.append('category', category);
     try {
         const response = await fetch(url);
         const data = await response.json();
@@ -26,6 +29,16 @@ export const fetchQuizQuestions = async (amount: number, difficulty: 'easy' | 'm
             console.error(data);
             return null;
         }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export const fetchCategories = async () => {
+    try {
+        const response = await fetch('https://opentdb.com/api_category.php');
+        const data = await response.json();
+        return data.trivia_categories;
     } catch (err) {
         console.error(err);
     }

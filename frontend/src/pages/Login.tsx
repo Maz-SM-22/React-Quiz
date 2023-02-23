@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
+import { useLoader } from '../contexts/LoadingContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const auth = useAuthContext();
+    const loading = useLoader();
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,14 +23,15 @@ const Login = () => {
         try {
             const response = await fetch('/auth/login', requestOptions);
             if (!response.ok) {
+                loading?.setError(response.statusText);
                 throw new Error(response.statusText)
             } else {
                 const data = await response.json()
                 auth?.onLogin(data);
-                navigate('/quiz', { replace: true })
+                navigate('/setup', { replace: true })
             }
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            loading?.setError(error);
         }
     }
 

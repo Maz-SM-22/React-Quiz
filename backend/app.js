@@ -34,20 +34,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-    if (req.session.viewCount) req.session.viewCount++
-    else req.session.viewCount = 1;
-    console.log(req.session);
-    res.json({ sessionId: req.session.id })
-})
-
-app.post('/login', passport.authenticate('local', {
-    failureRedirect: '/login',
-    successRedirect: '/quiz'
-}), (req, res) => {
-    console.log('User is logged in!');
-})
-
 app.use('/auth', authRoutes);
 app.use('/results', resultsRoutes);
 

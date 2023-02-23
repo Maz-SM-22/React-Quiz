@@ -47,7 +47,6 @@ exports.login = async (req, res, next) => {
             }
         })(req, res, next);
     } catch (error) {
-        console.log('Some error in this function')
         next(error);
     }
 }
