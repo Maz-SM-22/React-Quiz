@@ -72,7 +72,7 @@ const Setup = () => {
                     ))}
                 </select>
             </div>
-            <button onClick={() => navigate('/quiz', { replace: true })} className='preferences'>Save Quiz Preferences</button>
+            <button onClick={() => navigate('/quiz')} className='preferences'>Save Quiz Preferences</button>
         </form>
     )
 }
