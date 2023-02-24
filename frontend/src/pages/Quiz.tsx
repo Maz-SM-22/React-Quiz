@@ -102,7 +102,6 @@ const Quiz = () => {
 
     return (
         <div className='quiz'>
-            <button onClick={() => navigate('/setup')} className='settings'>Change Quiz Settings</button>
             {auth?.authData && (
                 <button onClick={logout} className='logout'>Log Out</button>
             )}
