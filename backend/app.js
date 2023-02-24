@@ -40,7 +40,7 @@ app.use('/results', resultsRoutes);
 app.use(errorHander);
 
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true })
     .then(() => {
         console.log('Successfully connected to the DB');
         app.listen(port, 'localhost', (err) => {
